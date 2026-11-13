@@ -22,13 +22,13 @@
   
   <div class="hero-content">
    
-    <style>
-  /* Pengaturan Dasar untuk Komputer / Desktop (Sudah Rapi) */
+   <style>
+  /* Pengaturan Dasar (Komputer / Desktop) */
   .header-text.custom-hero-header {
     text-align: center !important;
-    padding: 0 16px 16px 16px !important;
+    padding: 8px 16px 12px 16px !important;
     max-width: 680px !important;
-    margin: -36px auto 0 auto !important;
+    margin: -12px auto 0 auto !important; /* Turun lebih seimbang agar UNDANGAN tidak mepet atas */
     position: relative !important;
     z-index: 10 !important;
   }
@@ -38,54 +38,54 @@
     letter-spacing: 5px !important;
     text-transform: uppercase !important;
     color: #2b4464 !important;
-    margin: 0 0 8px 0 !important;
+    margin: 0 0 6px 0 !important;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.75) !important;
   }
   .header-text.custom-hero-header .family-title {
     font-family: Georgia, 'Times New Roman', serif !important;
-    font-size: 29px !important;
+    font-size: 27px !important;
     font-weight: 700 !important;
-    line-height: 1.32 !important;
+    line-height: 1.26 !important;
     color: #1a2d46 !important;
-    margin: 0 auto 12px auto !important;
+    margin: 0 auto 10px auto !important;
     letter-spacing: 0.3px !important;
     text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85) !important;
   }
   .header-text.custom-hero-header .date {
     display: inline-block !important;
-    font-size: 11px !important;
+    font-size: 10.5px !important;
     font-weight: 700 !important;
     letter-spacing: 2.2px !important;
     text-transform: uppercase !important;
     color: #1a2d46 !important;
     background-color: rgba(255, 255, 255, 0.75) !important;
-    padding: 5px 16px !important;
+    padding: 4px 15px !important;
     border-radius: 50px !important;
     border: 1px solid rgba(255, 255, 255, 0.9) !important;
     margin: 0 !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
   }
 
-  /* Penyesuaian Otomatis Khusus Layar HP (Lebar di bawah 576px) */
+  /* Penyesuaian Khusus Layar HP (Lebar di bawah 576px) */
   @media (max-width: 576px) {
     .header-text.custom-hero-header {
-      margin-top: -54px !important; /* Mengangkat posisi lebih tinggi di HP */
-      padding: 0 10px 10px 10px !important;
+      margin-top: -18px !important; /* Posisi pas, tidak terpotong di atas dan tidak menabrak peci */
+      padding: 6px 10px 10px 10px !important;
     }
     .header-text.custom-hero-header .subtitle {
-      font-size: 9.5px !important;
-      letter-spacing: 3.5px !important;
+      font-size: 10px !important;
+      letter-spacing: 3.8px !important;
       margin-bottom: 5px !important;
     }
     .header-text.custom-hero-header .family-title {
-      font-size: clamp(17.5px, 5.1vw, 22px) !important; /* Ukuran pas 2 baris di semua HP */
-      line-height: 1.28 !important;
+      font-size: clamp(18px, 5vw, 23px) !important;
+      line-height: 1.24 !important;
       margin-bottom: 8px !important;
     }
     .header-text.custom-hero-header .date {
-      font-size: 9.5px !important;
-      letter-spacing: 1.5px !important;
-      padding: 4px 12px !important;
+      font-size: 10px !important;
+      letter-spacing: 1.6px !important;
+      padding: 4px 13px !important;
     }
   }
 </style>
@@ -98,6 +98,7 @@
       
       <p id="dynamic-hero-date" class="date">...</p>
     </div>
+
 
 
 
