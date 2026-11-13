@@ -347,21 +347,18 @@
     <div class="admin-header">
       <div class="icon-lock">💍</div>
       <h2>Wedding Admin Panel</h2>
-      <h2>Umi - Yusup
-      <p>URL Generator Undangan WEB </p>
-        <p> Keluarga Bpk. H. Rasdan & Ibu Rita Angraini</p>
+      <h2>Umi - Yusup</h2>
+      <p>URL Generator Undangan WEB</p>
+      <p>Keluarga Bpk. H. Rasdan & Ibu Rita Angraini</p>
     </div>
     
     <div class="admin-form-group">
       <label>1. Jalur Distribusi Undangan</label>
       <div class="admin-tabs">
-       <!-- <button id="tabWA" class="tab-btn active">
-          <img src="assets/WA.png" class="tab-icon" alt="WhatsApp"> Via WhatsApp -->
-        </button>
-        <button id="tabIG" class="tab-btn">
+        <!-- Tombol tabIG langsung diberi class 'active' -->
+        <button id="tabIG" class="tab-btn active">
           <img src="assets/LI.png" class="tab-icon" alt="Instagram"> Link Undangan
-        <!--</button>
-        <button id="tabCetak" class="tab-btn">🖨️ Cetak QR</button> -->
+        </button>
       </div>
     </div>
 
@@ -369,11 +366,6 @@
       <label>2. Nama Tamu</label>
       <input type="text" id="admNama" placeholder="Contoh: Yuliana Putri" class="admin-input" autocomplete="off">
     </div>
-
-   <!--v id="wrapperWAInput" class="admin-form-group">
-      <label>3. Nomor Kontak WhatsApp</label>
-      <input type="text" id="admWA" placeholder="Contoh: 081234567890" class="admin-input" autocomplete="off">
-    </div>-->
 
     <button id="btnGen" class="admin-btn-primary">Generate & Siapkan Akses</button>
 
@@ -393,8 +385,9 @@
       <button id="modalBtnClose" class="modal-btn">Dimengerti</button>
     </div>
   </div>
+
   <script>
-    // Fungsi Kustom Modal untuk menggantikan alert() bawaan browser
+    // Fungsi Kustom Modal
     function tampilkanNotifikasi(judul, deskripsi, ikon = '✨', callback = null) {
       document.getElementById('modalIcon').innerText = ikon;
       document.getElementById('modalTitle').innerText = judul;
@@ -410,100 +403,51 @@
     }
          
     window.tampilkanNotifikasiAdmin = function(judul, deskripsi, ikon = '✨', callback = null) {
-      document.getElementById('modalIcon').innerText = ikon;
-      document.getElementById('modalTitle').innerText = judul;
-      document.getElementById('modalDesc').innerText = deskripsi;
-      
-      const modal = document.getElementById('customModal');
-      if (modal) modal.classList.add('active');
-      
-      document.getElementById('modalBtnClose').onclick = () => {
-        if (modal) modal.classList.remove('active');
-        if (callback) callback();
-      };
+      tampilkanNotifikasi(judul, deskripsi, ikon, callback);
     };
 
-    async function hitungHashSHA256(teks) {
-      const msgBuffer = new TextEncoder().encode(teks);
-      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
-      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').toLowerCase();
-    }
-     
-
-    // Fungsi enkripsi SHA-256 untuk 4 angka nomor kontak terakhir
+    // Fungsi Enkripsi SHA-256
     async function hitungHashSHA256(teks) {
       const msgBuffer = new TextEncoder().encode(teks);
       const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
       return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').toLowerCase();
     }
 
-    let activeMode = "wa";
-    const tabWA = document.getElementById('tabWA');
-    const tabIG = document.getElementById('tabIG'); // <-- Variabel baru untuk IG
-    const tabCetak = document.getElementById('tabCetak');
-    const wrapperWAInput = document.getElementById('wrapperWAInput');
+    // Set default mode langsung ke "ig"
+    let activeMode = "ig";
+    const tabIG = document.getElementById('tabIG');
     const btnGen = document.getElementById('btnGen');
 
-    // Kontrol Tab Distribusi
-    tabWA.onclick = () => {
-      activeMode = "wa";
-      tabWA.classList.add('active');
-      tabIG.classList.remove('active');
-      tabCetak.classList.remove('active');
-      wrapperWAInput.style.display = "block"; // Munculkan input nomor untuk WA
-    };
+    if (tabIG) {
+      tabIG.onclick = () => {
+        activeMode = "ig";
+        tabIG.classList.add('active');
+      };
+    }
 
-    tabIG.onclick = () => {
-      activeMode = "ig";
-      tabIG.classList.add('active');
-      tabWA.classList.remove('active');
-      tabCetak.classList.remove('active');
-      wrapperWAInput.style.display = "none"; // Sembunyikan input nomor seperti Cetak
-    };
-
-    tabCetak.onclick = () => {
-      activeMode = "cetak";
-      tabCetak.classList.add('active');
-      tabWA.classList.remove('active');
-      tabIG.classList.remove('active');
-      wrapperWAInput.style.display = "none"; // Sembunyikan input nomor
-    };
-
-
-     // Fungsi Utama Pembuatan Tautan Undangan
+    // Fungsi Utama Pembuatan Tautan Undangan (Khusus Jalur IG / Link)
     btnGen.onclick = async () => {
       const nama = document.getElementById('admNama').value.trim();
-      const rawWA = document.getElementById('admWA').value.trim();
       if (!nama) return tampilkanNotifikasi("Input Kosong", "Nama tamu tidak boleh dikosongkan!", "⚠️");
       
       const urlFormat = encodeURIComponent(nama).replace(/%20/g, '+');
       const btnAction = document.getElementById('btnActionEkstra');
       const domainAsli = window.location.origin + window.location.pathname.replace('admin.html', '');
       
-      if (activeMode === "wa") {
-        const angkaSaja = rawWA.replace(/\D/g, ''); 
-        if (angkaSaja.length < 4) return tampilkanNotifikasi("Nomor Tidak Valid", "Nomor WA harus menyertakan minimal 4 angka terakhir!", "📱");
-        const empatAngkaTerakhir = angkaSaja.slice(-4);
-        
-        // 🔒 PERBAIKAN: Tambahkan .trim() pada nama agar spasi tidak sengaja ikut terhitung menjadi hash
-        const namaBersihAdmin = nama.toLowerCase().trim();
-        const teksKombinasi = namaBersihAdmin + empatAngkaTerakhir;
-        const hashWA = await hitungHashSHA256(teksKombinasi);
-        
-        const linkLengkap = domainAsli + "index.html?to=" + urlFormat + "&v=" + hashWA + "&type=wa";
-        document.getElementById('txtHasil').value = linkLengkap;
-        
-        btnAction.style.display = "flex";
-        btnAction.className = "admin-btn-action wa-action";
-        btnAction.innerText = "🚀 Kirim Undangan via WhatsApp";
-        
-        let nomorValid = angkaSaja;
-        if (nomorValid.startsWith('0')) {
-          nomorValid = "62" + nomorValid.slice(1);
-        }
-        
-        // Template pesan undangan WhatsApp formal
-        const teksPesan = "Assalamu'alaikum Warahmatullahi Wabarakatuh\n\n" +
+      // Sistem Token Keamanan & Parameter
+      const hashNamaIG = await hitungHashSHA256(nama.toLowerCase().trim() + "weddingumi&yusup");
+      const linkLengkapIG = domainAsli + "index.html?to=" + urlFormat + "&v=" + hashNamaIG + "&type=cetak";
+      document.getElementById('txtHasil').value = linkLengkapIG;
+      
+      // Mengatur Tampilan Tombol Aksi
+      btnAction.style.display = "flex";
+      btnAction.className = "admin-btn-action ig-action";
+      btnAction.innerText = "📸 Salin Link & Ucapan";
+      btnAction.href = "javascript:void(0);";
+      btnAction.removeAttribute("target");
+      
+      // Ucapan Undangan Formal
+      const teksPesanIG = "Assalamu'alaikum Warahmatullahi Wabarakatuh\n\n" +
                           "Yth. Bapak/Ibu/Saudara/i\n" +
                           "*" + nama + "*\n" +
                           "Di Tempat\n\n" +
@@ -513,82 +457,26 @@
                           "⏰ Pukul : 09:00 - Selesai\n" +
                           "📍 Lokasi : Kp. Pekopen Timur. Desa LambangJaya. Tambun Selatan, Bekasi. Jawa Barat.\n\n" +
                           "Tanpa mengurangi rasa hormat, mohon akses undangan pada link berikut:\n" +
-                          linkLengkap + "\n\n" +
+                          linkLengkapIG + "\n\n" +
                           "Kehadiran Bapak/Ibu/Saudara/i tentu akan menjadi kehormatan besar bagi kami dan keluarga. Terima kasih.\n\n" +
                           "Yang berbahagia,\n\n" +
-                          "*Bpk. H. Rasdan & Ibu. Rita Anggaraini*\n\n" +
+                          "*Kel. Bpk. H. Rasdan & Ibu. Rita Anggaraini*\n\n" +
                           "Wassalamu'alaikum Warahmatullahi Wabarakatuh";
-        
-        btnAction.href = "https://wa.me/" + nomorValid + "?text=" + encodeURIComponent(teksPesan);
-        btnAction.target = "_blank";
-        btnAction.onclick = null;
-        
-      } else if (activeMode === "ig") {
-        // 🔒 JALUR INSTAGRAM: Sistem Token Keamanan & Parameter Sama Seperti Cetak (Tanpa Nomor HP)
-        const hashNamaIG = await hitungHashSHA256(nama.toLowerCase().trim() + "weddingumi&yusup");
-        const linkLengkapIG = domainAsli + "index.html?to=" + urlFormat + "&v=" + hashNamaIG + "&type=cetak";
-        document.getElementById('txtHasil').value = linkLengkapIG;
-        
-        // Mengatur Tampilan Tombol Aksi Untuk Instagram
-        btnAction.style.display = "flex";
-        btnAction.className = "admin-btn-action ig-action";
-        btnAction.innerText = "📸 Salin Link & Ucapan Instagram";
-        btnAction.href = "javascript:void(0);";
-        btnAction.removeAttribute("target");
-        
-        // Ucapan Undangan Formal Khusus Jalur Instagram DM
-        const teksPesanIG = "Assalamu'alaikum Warahmatullahi Wabarakatuh\n\n" +
-                            "Yth. Bapak/Ibu/Saudara/i\n" +
-                            "*" + nama + "*\n" +
-                            "Di Tempat\n\n" +
-                            "Dengan segala kerendahan hati, kami mengundang Bapak/Ibu/Saudara/i dalam acara pernikahan Putri kami yang di selenggarakan pada :\n\n" +
-                            "Pada Hari : Sabtu\n" +
-                            "🗓️ Tanggal : 12 Desember 2026\n" +
-                            "⏰ Pukul : 09:00 - Selesai\n" +
-                            "📍 Lokasi : Kp. Pekopen Timur. Desa LambangJaya. Tambun Selatan, Bekasi. Jawa Barat.\n\n" +
-                            "Tanpa mengurangi rasa hormat, mohon akses undangan pada link berikut:\n" +
-                            linkLengkapIG + "\n\n" +
-                            "Kehadiran Bapak/Ibu/Saudara/i tentu akan menjadi kehormatan besar bagi kami dan keluarga. Terima kasih.\n\n" +
-                            "Yang berbahagia,\n\n" +
-                            "*Kel. Bpk. H. Rasdan & Ibu. Rita Anggaraini*\n\n" +
-                            "Wassalamu'alaikum Warahmatullahi Wabarakatuh";
-        
-        // Aksi menyalin seluruh teks ucapan beserta tautannya ke papan klip ponsel/PC
-        btnAction.onclick = () => {
-          navigator.clipboard.writeText(teksPesanIG);
-          tampilkanNotifikasi("Teks Undangan Tersalin!", "Teks ucapan lengkap beserta tautan Instagram berhasil disalin ke clipboard.", "🎉");
-        };
-        
-      } else {
-        // 1. Hitung hash dari nama tamu ditambah kata rahasia (salt) agar tidak bisa dimanipulasi
-        const hashNamaCetak = await hitungHashSHA256(nama.toLowerCase().trim() + "weddingumi&yusup");
-        
-        // 2. Sekarang tautan cetak resmi menyertakan parameter '&v=' sebagai token keamanan
-        const linkLengkapCetak = domainAsli + "index.html?to=" + urlFormat + "&v=" + hashNamaCetak + "&type=cetak";
-        document.getElementById('txtHasil').value = linkLengkapCetak;
-        
-        // 3. Menampilkan dan mengatur aksi tombol cetak (tetap mempertahankan logika asli Anda)
-        btnAction.style.display = "flex";
-        btnAction.className = "admin-btn-action cetak-action";
-        btnAction.innerText = "📋 Salin Link QR Code";
-        btnAction.href = "javascript:void(0);";
-        btnAction.removeAttribute("target");
-        
-        btnAction.onclick = () => {
-          navigator.clipboard.writeText(linkLengkapCetak);
-          tampilkanNotifikasi("Tersalin!", "Tautan untuk cetak/QR Code berhasil disalin ke clipboard.", "🎉");
-        };
-      }
+      
+      // Aksi menyalin seluruh teks ucapan beserta tautannya
+      btnAction.onclick = () => {
+        navigator.clipboard.writeText(teksPesanIG);
+        tampilkanNotifikasi("Teks Undangan Tersalin!", "Teks ucapan lengkap beserta tautan berhasil disalin ke clipboard.", "🎉");
+      };
 
       // Menampilkan kotak hasil dan menyalin tautan secara otomatis
       document.getElementById('admHasil').style.display = "block";
       navigator.clipboard.writeText(document.getElementById('txtHasil').value);
       tampilkanNotifikasi("Sukses!", "Proses berhasil! Tautan lengkap otomatis disalin ke clipboard Anda.", "🎉");
     };
-
   </script>
   
   <script src="script.js"></script>
-  
 </body>
+
 </html>
