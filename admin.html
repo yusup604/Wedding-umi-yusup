@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Panel - Umi & Yusup Wedding</title>
+    <style>
+    :root {
+      --dusty-blue: #93a9b5;
+      --navy-text: #2c3e50;
+      --glass-bg: rgba(255, 255, 255, 0.45);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --input-bg: rgba(255, 255, 255, 0.7);
+    }
+
+    /* --- PENGATURAN AREA HALAMAN UTAMA --- */
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: #93a9b5; /* Warna dasar jika gambar sedang dimuat */
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: var(--navy-text);
+      box-sizing: border-box;
+      position: relative;
+    }
+
+    /* --- PEMBATAS UKURAN GAMBAR LATAR BELAKANG (AGAR TIDAK RAKSASA) --- */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      /* Membatasi lebar gambar latar belakang maksimal seukuran layar HP */
+      width: 100%;
+      max-width: 450px; 
+      /* Menyelaraskan posisi gambar agar selalu tepat berada di tengah layar */
+      left: 50%;
+      transform: translateX(-50%);
+      /* Mengambil gambar dari folder assets Anda */
+      background: linear-gradient(rgba(147, 169, 181, 0.6), rgba(147, 169, 181, 0.75)), 
+                 /*rl('assets/event-bg.jpeg') no-repeat center center;*/
+                   url('assets/2hero-bg.jpeg') no-repeat center center;
+      background-size: cover; /* Gambar otomatis menyesuaikan diri tanpa gepeng */
+      z-index: -1; /* Mengirim gambar ke lapisan paling belakang di bawah text/card */
+    }
+
+     /* --- KARTU PANEL ADMIN (GLASSMORPHISM) --- */
+    .admin-card {
+      display: none; /* Sembunyikan secara default */
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 35px 25px;
+      border-radius: 24px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--glass-border);
+      width: 90%;
+      max-width: 380px; /* Ukuran pas agar serasi di dalam background bingkai */
+      box-sizing: border-box;
+      text-align: center;
+      margin: 20px;
+    }
+
+
+    .admin-header {
+      margin-bottom: 25px;
+    }
+
+    .admin-header .icon-lock {
+      font-size: 32px;
+      color: var(--navy-text);
+      opacity: 0.8;
+      margin-bottom: 5px;
+    }
+
+    .admin-header h2 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      color: var(--navy-text);
+    }
+
+    .admin-header p {
+      margin: 6px 0 0 0;
+      color: rgba(44, 62, 80, 0.75);
+      font-size: 13px;
+    }
+
+    /* --- FORMULIR INPUT --- */
+    .admin-form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .admin-form-group label {
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--navy-text);
+      display: block;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* --- TOMBOL TAB DISTRIBUSI --- */
+    .admin-tabs {
+      display: flex;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      padding: 4px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: rgba(44, 62, 80, 0.7);
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+      background: rgba(255, 255, 255, 0.85);
+      color: var(--navy-text);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    /* --- ELEMEN INPUT & TEXTAREA --- */
+    .admin-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      box-sizing: border-box;
+      font-size: 14px;
+      color: var(--navy-text);
+      transition: all 0.3s ease;
+    }
+
+    .admin-input:focus {
+      border-color: rgba(44, 62, 80, 0.5);
+      background: #ffffff;
+      outline: none;
+    }
+
+    .admin-textarea {
+      width: 100%;
+      height: 70px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid var(--glass-border);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      padding: 10px;
+      box-sizing: border-box;
+      resize: none;
+      color: var(--navy-text);
+      border-radius: 10px;
+      margin-top: 6px;
+      outline: none;
+    }
+
+    /* --- TOMBOL UTAMA GENERATE --- */
+    .admin-btn-primary {
+      width: 100%;
+      background: var(--navy-text);
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+      margin-top: 5px;
+    }
+
+    .admin-btn-primary:hover {
+      background: #1a252f;
+      transform: translateY(-1px);
+    }
+
+    /* --- KOTAK HASIL GENERATOR LINK --- */
+    .admin-result-box {
+      margin-top: 20px;
+      background: rgba(255, 255, 255, 0.5);
+      padding: 14px;
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      text-align: left;
+      animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* --- TOMBOL AKSI KIRIM / SALIN --- */
+    .admin-btn-action {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      color: white;
+      text-decoration: none;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    .wa-action { 
+      background: #2e7d32; 
+      box-shadow: 0 4px 10px rgba(46, 125, 50, 0.15);
+    }
+    .wa-action:hover { background: #1b5e20; }
+
+    .cetak-action { 
+      background: #546e7a; 
+      box-shadow: 0 4px 10px rgba(84, 110, 122, 0.15);
+    }
+    .cetak-action:hover { background: #37474f; }
+
+    /* --- TAMPILAN POP-UP MODAL KUSTOM (GLASSMORPHISM) --- */
+    .custom-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(44, 62, 80, 0.4);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .custom-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .custom-modal {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 25px;
+      width: 85%;
+      max-width: 350px;
+      text-align: center;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      transform: scale(0.85);
+      transition: transform 0.3s ease;
+    }
+
+    .custom-modal-overlay.active .custom-modal {
+      transform: scale(1);
+    }
+
+    .modal-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--navy-text);
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 13px;
+      color: rgba(44, 62, 80, 0.8);
+      line-height: 1.4;
+      margin-bottom: 18px;
+    }
+
+    .modal-btn {
+      background: var(--navy-text);
+      color: #ffffff;
+      border: none;
+      padding: 9px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .modal-btn:hover {
+      background: #1a252f;
+    }
+
+      /* 🔥 SOLUSI UTAMA: Memaksa semua gambar di dalam tombol tab berukuran kecil & proporsional */
+    .admin-tabs button img, 
+    .tab-btn img,
+    .tab-icon {
+      width: 20px !important;       /* Mengunci lebar ikon maksimal 20 piksel */
+      height: 20px !important;      /* Mengunci tinggi ikon maksimal 20 piksel */
+      object-fit: contain !important;/* Memastikan gambar tidak gepeng atau ketarik */
+      flex-shrink: 0 !important;    /* Mencegah gambar menyusut saat layar mengecil */
+      margin-right: 6px;            /* Memberi jarak horizontal antara ikon dan teks */
+      display: inline-block;
+      vertical-align: middle;
+    }
+    
+    /* Memastikan susunan teks dan gambar di dalam tombol sejajar di tengah */
+    .admin-tabs button, 
+    .tab-btn {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      vertical-align: middle;
+    }
+
+  </style>
+
+</head>
+<body>
+  <div class="admin-card">
+    <div class="admin-header">
+      <div class="icon-lock">💍</div>
+      <h2>Wedding Admin Panel</h2>
+      <h2>Umi - Yusup
+      <p>URL Generator Undangan WEB </p>
+        <p> Keluarga Bpk. H. Rasdan & Ibu Rita Angraini</p>
+    </div>
+    
+    <div class="admin-form-group">
+      <label>1. Jalur Distribusi Undangan</label>
+      <div class="admin-tabs">
+       <!-- <button id="tabWA" class="tab-btn active">
+          <img src="assets/WA.png" class="tab-icon" alt="WhatsApp"> Via WhatsApp -->
+        </button>
+        <button id="tabIG" class="tab-btn">
+          <img src="assets/LI.png" class="tab-icon" alt="Instagram"> Link Undangan
+        <!--</button>
+        <button id="tabCetak" class="tab-btn">🖨️ Cetak QR</button> -->
+      </div>
+    </div>
+
+    <div class="admin-form-group">
+      <label>2. Nama Tamu</label>
+      <input type="text" id="admNama" placeholder="Contoh: Yuliana Putri" class="admin-input" autocomplete="off">
+    </div>
+
+   <!--v id="wrapperWAInput" class="admin-form-group">
+      <label>3. Nomor Kontak WhatsApp</label>
+      <input type="text" id="admWA" placeholder="Contoh: 081234567890" class="admin-input" autocomplete="off">
+    </div>-->
+
+    <button id="btnGen" class="admin-btn-primary">Generate & Siapkan Akses</button>
+
+    <div id="admHasil" class="admin-result-box" style="display:none;">
+      <label style="font-size:11px; font-weight:600;">Tautan Akses Berhasil Dibuat:</label>
+      <textarea id="txtHasil" readonly class="admin-textarea"></textarea>
+      <a id="btnActionEkstra" class="admin-btn-action" style="display:none; text-align:center;"></a>
+    </div>
+  </div>
+
+  <!-- STRUKTUR POP-UP MODAL KUSTOM (GLASSMORPHISM) -->
+  <div id="customModal" class="custom-modal-overlay">
+    <div class="custom-modal">
+      <div id="modalIcon" class="modal-icon">✨</div>
+      <div id="modalTitle" class="modal-title">Notifikasi</div>
+      <div id="modalDesc" class="modal-desc">Pesan pemberitahuan di sini.</div>
+      <button id="modalBtnClose" class="modal-btn">Dimengerti</button>
+    </div>
+  </div>
+  <script>
+    // Fungsi Kustom Modal untuk menggantikan alert() bawaan browser
+    function tampilkanNotifikasi(judul, deskripsi, ikon = '✨', callback = null) {
+      document.getElementById('modalIcon').innerText = ikon;
+      document.getElementById('modalTitle').innerText = judul;
+      document.getElementById('modalDesc').innerText = deskripsi;
+      
+      const modal = document.getElementById('customModal');
+      modal.classList.add('active');
+      
+      document.getElementById('modalBtnClose').onclick = () => {
+        modal.classList.remove('active');
+        if (callback) callback();
+      };
+    }
+         
+    window.tampilkanNotifikasiAdmin = function(judul, deskripsi, ikon = '✨', callback = null) {
+      document.getElementById('modalIcon').innerText = ikon;
+      document.getElementById('modalTitle').innerText = judul;
+      document.getElementById('modalDesc').innerText = deskripsi;
+      
+      const modal = document.getElementById('customModal');
+      if (modal) modal.classList.add('active');
+      
+      document.getElementById('modalBtnClose').onclick = () => {
+        if (modal) modal.classList.remove('active');
+        if (callback) callback();
+      };
+    };
+
+    async function hitungHashSHA256(teks) {
+      const msgBuffer = new TextEncoder().encode(teks);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').toLowerCase();
+    }
+     
+
+    // Fungsi enkripsi SHA-256 untuk 4 angka nomor kontak terakhir
+    async function hitungHashSHA256(teks) {
+      const msgBuffer = new TextEncoder().encode(teks);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').toLowerCase();
+    }
+
+    let activeMode = "wa";
+    const tabWA = document.getElementById('tabWA');
+    const tabIG = document.getElementById('tabIG'); // <-- Variabel baru untuk IG
+    const tabCetak = document.getElementById('tabCetak');
+    const wrapperWAInput = document.getElementById('wrapperWAInput');
+    const btnGen = document.getElementById('btnGen');
+
+    // Kontrol Tab Distribusi
+    tabWA.onclick = () => {
+      activeMode = "wa";
+      tabWA.classList.add('active');
+      tabIG.classList.remove('active');
+      tabCetak.classList.remove('active');
+      wrapperWAInput.style.display = "block"; // Munculkan input nomor untuk WA
+    };
+
+    tabIG.onclick = () => {
+      activeMode = "ig";
+      tabIG.classList.add('active');
+      tabWA.classList.remove('active');
+      tabCetak.classList.remove('active');
+      wrapperWAInput.style.display = "none"; // Sembunyikan input nomor seperti Cetak
+    };
+
+    tabCetak.onclick = () => {
+      activeMode = "cetak";
+      tabCetak.classList.add('active');
+      tabWA.classList.remove('active');
+      tabIG.classList.remove('active');
+      wrapperWAInput.style.display = "none"; // Sembunyikan input nomor
+    };
+
+
+     // Fungsi Utama Pembuatan Tautan Undangan
+    btnGen.onclick = async () => {
+      const nama = document.getElementById('admNama').value.trim();
+      const rawWA = document.getElementById('admWA').value.trim();
+      if (!nama) return tampilkanNotifikasi("Input Kosong", "Nama tamu tidak boleh dikosongkan!", "⚠️");
+      
+      const urlFormat = encodeURIComponent(nama).replace(/%20/g, '+');
+      const btnAction = document.getElementById('btnActionEkstra');
+      const domainAsli = window.location.origin + window.location.pathname.replace('admin.html', '');
+      
+      if (activeMode === "wa") {
+        const angkaSaja = rawWA.replace(/\D/g, ''); 
+        if (angkaSaja.length < 4) return tampilkanNotifikasi("Nomor Tidak Valid", "Nomor WA harus menyertakan minimal 4 angka terakhir!", "📱");
+        const empatAngkaTerakhir = angkaSaja.slice(-4);
+        
+        // 🔒 PERBAIKAN: Tambahkan .trim() pada nama agar spasi tidak sengaja ikut terhitung menjadi hash
+        const namaBersihAdmin = nama.toLowerCase().trim();
+        const teksKombinasi = namaBersihAdmin + empatAngkaTerakhir;
+        const hashWA = await hitungHashSHA256(teksKombinasi);
+        
+        const linkLengkap = domainAsli + "index.html?to=" + urlFormat + "&v=" + hashWA + "&type=wa";
+        document.getElementById('txtHasil').value = linkLengkap;
+        
+        btnAction.style.display = "flex";
+        btnAction.className = "admin-btn-action wa-action";
+        btnAction.innerText = "🚀 Kirim Undangan via WhatsApp";
+        
+        let nomorValid = angkaSaja;
+        if (nomorValid.startsWith('0')) {
+          nomorValid = "62" + nomorValid.slice(1);
+        }
+        
+        // Template pesan undangan WhatsApp formal
+        const teksPesan = "Assalamu'alaikum Warahmatullahi Wabarakatuh\n\n" +
+                          "Yth. Bapak/Ibu/Saudara/i\n" +
+                          "*" + nama + "*\n" +
+                          "Di Tempat\n\n" +
+                          "Dengan segala kerendahan hati, kami mengundang Bapak/Ibu/Saudara/i dalam acara pernikahan Putri kami yang di selenggarakan pada :\n\n" +
+                          "Pada Hari : Sabtu\n" +
+                          "🗓️ Tanggal : 12 Desember 2026\n" +
+                          "⏰ Pukul : 09:00 - Selesai\n" +
+                          "📍 Lokasi : Kp. Pekopen Timur. Desa LambangJaya. Tambun Selatan, Bekasi. Jawa Barat.\n\n" +
+                          "Tanpa mengurangi rasa hormat, mohon akses undangan pada link berikut:\n" +
+                          linkLengkap + "\n\n" +
+                          "Kehadiran Bapak/Ibu/Saudara/i tentu akan menjadi kehormatan besar bagi kami dan keluarga. Terima kasih.\n\n" +
+                          "Yang berbahagia,\n\n" +
+                          "*Bpk. H. Rasdan & Ibu. Rita Anggaraini*\n\n" +
+                          "Wassalamu'alaikum Warahmatullahi Wabarakatuh";
+        
+        btnAction.href = "https://wa.me/" + nomorValid + "?text=" + encodeURIComponent(teksPesan);
+        btnAction.target = "_blank";
+        btnAction.onclick = null;
+        
+      } else if (activeMode === "ig") {
+        // 🔒 JALUR INSTAGRAM: Sistem Token Keamanan & Parameter Sama Seperti Cetak (Tanpa Nomor HP)
+        const hashNamaIG = await hitungHashSHA256(nama.toLowerCase().trim() + "weddingumi&yusup");
+        const linkLengkapIG = domainAsli + "index.html?to=" + urlFormat + "&v=" + hashNamaIG + "&type=cetak";
+        document.getElementById('txtHasil').value = linkLengkapIG;
+        
+        // Mengatur Tampilan Tombol Aksi Untuk Instagram
+        btnAction.style.display = "flex";
+        btnAction.className = "admin-btn-action ig-action";
+        btnAction.innerText = "📸 Salin Link & Ucapan Instagram";
+        btnAction.href = "javascript:void(0);";
+        btnAction.removeAttribute("target");
+        
+        // Ucapan Undangan Formal Khusus Jalur Instagram DM
+        const teksPesanIG = "Assalamu'alaikum Warahmatullahi Wabarakatuh\n\n" +
+                            "Yth. Bapak/Ibu/Saudara/i\n" +
+                            "*" + nama + "*\n" +
+                            "Di Tempat\n\n" +
+                            "Dengan segala kerendahan hati, kami mengundang Bapak/Ibu/Saudara/i dalam acara pernikahan Putri kami yang di selenggarakan pada :\n\n" +
+                            "Pada Hari : Sabtu\n" +
+                            "🗓️ Tanggal : 12 Desember 2026\n" +
+                            "⏰ Pukul : 09:00 - Selesai\n" +
+                            "📍 Lokasi : Kp. Pekopen Timur. Desa LambangJaya. Tambun Selatan, Bekasi. Jawa Barat.\n\n" +
+                            "Tanpa mengurangi rasa hormat, mohon akses undangan pada link berikut:\n" +
+                            linkLengkapIG + "\n\n" +
+                            "Kehadiran Bapak/Ibu/Saudara/i tentu akan menjadi kehormatan besar bagi kami dan keluarga. Terima kasih.\n\n" +
+                            "Yang berbahagia,\n\n" +
+                            "*Kel. Bpk. H. Rasdan & Ibu. Rita Anggaraini*\n\n" +
+                            "Wassalamu'alaikum Warahmatullahi Wabarakatuh";
+        
+        // Aksi menyalin seluruh teks ucapan beserta tautannya ke papan klip ponsel/PC
+        btnAction.onclick = () => {
+          navigator.clipboard.writeText(teksPesanIG);
+          tampilkanNotifikasi("Teks Undangan Tersalin!", "Teks ucapan lengkap beserta tautan Instagram berhasil disalin ke clipboard.", "🎉");
+        };
+        
+      } else {
+        // 1. Hitung hash dari nama tamu ditambah kata rahasia (salt) agar tidak bisa dimanipulasi
+        const hashNamaCetak = await hitungHashSHA256(nama.toLowerCase().trim() + "weddingumi&yusup");
+        
+        // 2. Sekarang tautan cetak resmi menyertakan parameter '&v=' sebagai token keamanan
+        const linkLengkapCetak = domainAsli + "index.html?to=" + urlFormat + "&v=" + hashNamaCetak + "&type=cetak";
+        document.getElementById('txtHasil').value = linkLengkapCetak;
+        
+        // 3. Menampilkan dan mengatur aksi tombol cetak (tetap mempertahankan logika asli Anda)
+        btnAction.style.display = "flex";
+        btnAction.className = "admin-btn-action cetak-action";
+        btnAction.innerText = "📋 Salin Link QR Code";
+        btnAction.href = "javascript:void(0);";
+        btnAction.removeAttribute("target");
+        
+        btnAction.onclick = () => {
+          navigator.clipboard.writeText(linkLengkapCetak);
+          tampilkanNotifikasi("Tersalin!", "Tautan untuk cetak/QR Code berhasil disalin ke clipboard.", "🎉");
+        };
+      }
+
+      // Menampilkan kotak hasil dan menyalin tautan secara otomatis
+      document.getElementById('admHasil').style.display = "block";
+      navigator.clipboard.writeText(document.getElementById('txtHasil').value);
+      tampilkanNotifikasi("Sukses!", "Proses berhasil! Tautan lengkap otomatis disalin ke clipboard Anda.", "🎉");
+    };
+
+  </script>
+  
+  <script src="script.js"></script>
+  
+</body>
+</html>
